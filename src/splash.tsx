@@ -16,7 +16,7 @@ function Splash({ label = 'MyGNI' }: SplashProps) {
     <View style={styles.container}>
       <View style={styles.centerContent}>
         <Image
-          source={require('../assets/images/splash-logo.png')}
+          source={require('../assets/images/appicon.png')}
           style={styles.logo}
           resizeMode="contain"
         />

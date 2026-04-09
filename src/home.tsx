@@ -3,6 +3,7 @@ import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
   Alert,
+  Image,
   Linking,
   Pressable,
   ScrollView,
@@ -13,7 +14,6 @@ import {
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import Icon from 'react-native-vector-icons/Ionicons';
 import type { RootStackParamList } from '../App';
 import { TranslationKey, useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
@@ -473,7 +473,11 @@ function Home() {
             >
               <View style={styles.aiButtonGlow} />
               <View style={styles.aiButtonInnerRing}>
-                <Icon name="sparkles" size={20} color={colors.accent} />
+                <Image
+                  source={require('../assets/images/ai.png')}
+                  style={styles.aiButtonIcon}
+                  resizeMode="contain"
+                />
               </View>
             </Pressable>
           </View>
@@ -727,6 +731,11 @@ const createStyles = (colors: AppThemeColors) =>
       backgroundColor: colors.surfaceStrong,
       alignItems: 'center',
       justifyContent: 'center',
+    },
+    aiButtonIcon: {
+      width: 20,
+      height: 20,
+      tintColor: colors.accent,
     },
     section: {
       marginBottom: 14,

@@ -238,15 +238,15 @@ const english = {
   screen_prayer_disable_text: 'All scheduled prayer alerts were removed.',
   screen_prayer_unable_schedule: 'Unable to schedule notifications',
   screen_prayer_unable_cancel: 'Unable to cancel notifications',
-  screen_intro_welcome_title: 'Welcome to MyGNI',
+  screen_intro_welcome_title: 'Prayer Time',
   screen_intro_welcome_text:
-    'Track your goals and get a clear daily view of your progress.',
-  screen_intro_learn_title: 'Learn in Small Steps',
+    'Check accurate daily prayer times and stay connected to every salah on time.',
+  screen_intro_learn_title: 'Quran',
   screen_intro_learn_text:
-    'Follow simple bite-sized actions and keep momentum every day.',
-  screen_intro_consistent_title: 'Stay Consistent',
+    'Read the Quran with a simple, focused experience designed for daily reflection.',
+  screen_intro_consistent_title: 'Deen AI',
   screen_intro_consistent_text:
-    'Build your routine and grow with smart reminders and guidance.',
+    'Ask Deen AI for quick Islamic guidance, learning support, and helpful answers anytime.',
   screen_intro_next: 'Next',
   screen_intro_get_started: 'Get Started',
 } as const;

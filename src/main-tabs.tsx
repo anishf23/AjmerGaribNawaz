@@ -1,6 +1,8 @@
 import React from 'react';
 import {
   Dimensions,
+  Image,
+  ImageSourcePropType,
   Pressable,
   StyleSheet,
   Text,
@@ -10,7 +12,6 @@ import {
   BottomTabBarProps,
   createBottomTabNavigator,
 } from '@react-navigation/bottom-tabs';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Home from './home';
 import Info from './info';
@@ -28,11 +29,11 @@ type MainTabParamList = {
 
 const Tab = createBottomTabNavigator<MainTabParamList>();
 
-const tabIcons: Record<keyof MainTabParamList, { active: string; inactive: string }> = {
-  Home: { active: 'home', inactive: 'home-outline' },
-  PrayerTime: { active: 'time', inactive: 'time-outline' },
-  Quran: { active: 'book', inactive: 'book-outline' },
-  Info: { active: 'information-circle', inactive: 'information-circle-outline' },
+const tabIcons: Record<keyof MainTabParamList, ImageSourcePropType> = {
+  Home: require('../assets/images/home.png'),
+  PrayerTime: require('../assets/images/prayertime.png'),
+  Quran: require('../assets/images/quran.png'),
+  Info: require('../assets/images/info.png'),
 };
 
 function rgba(hex: string, alpha: number) {
@@ -66,9 +67,7 @@ function GlassyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
           {state.routes.map((route, index) => {
             const descriptor = descriptors[route.key];
             const isFocused = state.index === index;
-            const iconName = isFocused
-              ? tabIcons[route.name as keyof MainTabParamList].active
-              : tabIcons[route.name as keyof MainTabParamList].inactive;
+            const iconSource = tabIcons[route.name as keyof MainTabParamList];
 
             const label =
               typeof descriptor.options.title === 'string'
@@ -95,11 +94,11 @@ function GlassyTabBar({ state, descriptors, navigation }: BottomTabBarProps) {
                 onPress={onPress}
                 style={[styles.tabButton, isFocused ? styles.tabButtonActive : null]}
               >
-                <View style={[styles.iconWrap, isFocused ? styles.iconWrapActive : null]}>
-                  <Icon
-                    name={iconName}
-                    size={20}
-                    color={isFocused ? colors.accentContrast : colors.textSoft}
+                <View style={[styles.iconWrap, ]}>
+                  <Image
+                    source={iconSource}
+                    style={[styles.tabIcon, isFocused ? styles.tabIconActive : styles.tabIconInactive,{tintColor:isFocused ? colors.accent : colors.textSoft}]}
+                    resizeMode="contain"
                   />
                 </View>
                 <Text
@@ -235,6 +234,16 @@ const createStyles = (colors: ReturnType<typeof useAppTheme>['colors'], isDark: 
       shadowOpacity: isDark ? 0.28 : 0.18,
       shadowRadius: 10,
       elevation: 2,
+    },
+    tabIcon: {
+      width: 20,
+      height: 20,
+    },
+    tabIconActive: {
+      opacity: 1,
+    },
+    tabIconInactive: {
+      opacity: 0.6,
     },
     tabLabel: {
       fontSize: 10,
