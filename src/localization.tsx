@@ -63,6 +63,9 @@ const english = {
   info_share_failed_subtitle: 'Unable to share app right now.',
   info_share_message:
     'Check out MyGNI app for prayer times, Quran, and Islamic resources.',
+  about_description: 'MyGNI is a comprehensive Islamic app designed to help Muslims connect with their faith. Our app provides prayer times, Quran reading, Islamic calendar, dua collections, and various Islamic educational resources. We are committed to providing accurate and authentic Islamic content to help you strengthen your spiritual journey. Our mission is to make Islamic knowledge accessible and convenient for everyone, anywhere in the world.',
+  privacy_description: 'At MyGNI, we respect your privacy and are committed to protecting your personal information. We do not collect, store, or share any personal data without your explicit consent. Our app may use location services only for prayer time calculations and nearby Islamic places features, and this data is not stored on our servers. We use minimal permissions necessary for app functionality and prioritize user privacy and data security.',
+  terms_description: 'By using MyGNI app, you agree to these terms and conditions. The app is provided "as is" for informational purposes. We strive for accuracy in Islamic content but cannot guarantee absolute accuracy. Users are responsible for verifying information with qualified Islamic scholars. The app should not be used as a substitute for proper Islamic education or scholarly guidance. We reserve the right to modify these terms at any time.',
   home_kicker: 'ASSALAMU ALAIKUM',
   home_title: 'Ajmer Garib Nawaz',
   home_subtitle: 'Dates may vary by 1 day depending on moon sighting.',

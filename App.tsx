@@ -11,6 +11,7 @@ import {
 } from '@react-navigation/native-stack';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { StatusBar } from 'react-native';
+import AboutUs from './src/AboutUs';
 import DeenAI from './src/DeenAI';
 import Takti from './src/Takti';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
@@ -28,10 +29,12 @@ import NamazRakat from './src/NamazRakat';
 import NameOfAllah from './src/nameofall';
 import NearbyPlaces from './src/NearbyPlaces';
 import PrayerSettings from './src/PrayerSettings';
+import PrivacyPolicy from './src/PrivacyPolicy';
 import QiblaFinder from './src/QiblaFinder';
 import SixKalima from './src/SixKalima';
 import Splash from './src/splash';
 import TasbihCounter from './src/TasbihCounter';
+import TermsAndConditions from './src/TermsAndConditions';
 import ZakatCalculator from './src/ZakatCalculator';
 import { LocalizationProvider } from './src/localization';
 import { AppThemeProvider, useAppTheme } from './src/theme';
@@ -65,6 +68,9 @@ export type RootStackParamList = {
   DeenAI: undefined;
   NearbyPlaces: undefined;
   Takti: undefined;
+  AboutUs: undefined;
+  PrivacyPolicy: undefined;
+  TermsAndConditions: undefined;
 };
 
 const Stack = createNativeStackNavigator<RootStackParamList>();
@@ -140,6 +146,9 @@ function AppContent() {
           <Stack.Screen name="DeenAI" component={DeenAI} />
           <Stack.Screen name="NearbyPlaces" component={NearbyPlaces} />
           <Stack.Screen name="Takti" component={Takti} />
+          <Stack.Screen name="AboutUs" component={AboutUs} />
+          <Stack.Screen name="PrivacyPolicy" component={PrivacyPolicy} />
+          <Stack.Screen name="TermsAndConditions" component={TermsAndConditions} />
         </Stack.Navigator>
       </NavigationContainer>
     </SafeAreaProvider>

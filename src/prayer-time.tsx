@@ -5,13 +5,13 @@ import {
   Alert,
   Animated,
   Easing,
+  Image,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
 } from 'react-native';
-import Icon from 'react-native-vector-icons/Ionicons';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../App';
 import {
@@ -283,7 +283,11 @@ function PrayerTime() {
             style={styles.settingsButton}
             onPress={() => navigation.navigate('PrayerSettings')}
           >
-            <Icon name="settings-outline" size={22} color={colors.accent} />
+            <Image
+              source={require('../assets/images/settings.png')}
+              style={styles.settingsIcon}
+              resizeMode="contain"
+            />
           </Pressable>
         </View>
 
@@ -463,6 +467,11 @@ const createStyles = (colors: AppThemeColors) =>
       borderWidth: 1,
       borderColor: colors.border,
       marginTop: 4,
+    },
+    settingsIcon: {
+      width: 22,
+      height: 22,
+      tintColor: colors.accent,
     },
     headerRow: {
       marginTop: 12,

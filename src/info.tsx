@@ -13,6 +13,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { languages, useLocalization } from './localization';
 import { AppThemeColors, ColorTheme, ThemeMode, useAppTheme } from './theme';
+import { useNavigation } from '@react-navigation/native';
+import { NativeStackNavigationProp } from '@react-navigation/native-stack';
+import type { RootStackParamList } from '../App';
 
 type InfoMenuItem = {
   title: string;
@@ -34,6 +37,7 @@ const colorThemeOptions: { key: ColorTheme; name: string; color: string }[] = [
 function Info() {
   const { colors, mode, resolvedMode, colorTheme, setMode, setColorTheme } = useAppTheme();
   const { language, setLanguage, t } = useLocalization();
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const styles = createStyles(colors);
   const [showLanguageList, setShowLanguageList] = useState(false);
   const [showColorThemeModal, setShowColorThemeModal] = useState(false);
@@ -87,7 +91,7 @@ function Info() {
       title: t('info_about_title'),
       subtitle: t('info_about_subtitle'),
       icon: 'ℹ️',
-      onPress: () => showComingSoon(t('info_about_title')),
+      onPress: () => navigation.navigate('AboutUs'),
     },
     {
       title: t('info_contact_title'),
@@ -99,13 +103,13 @@ function Info() {
       title: t('info_privacy_title'),
       subtitle: t('info_privacy_subtitle'),
       icon: '🔒',
-      onPress: () => showComingSoon(t('info_privacy_title')),
+      onPress: () => navigation.navigate('PrivacyPolicy'),
     },
     {
       title: t('info_terms_title'),
       subtitle: t('info_terms_subtitle'),
       icon: '📜',
-      onPress: () => showComingSoon(t('info_terms_title')),
+      onPress: () => navigation.navigate('TermsAndConditions'),
     },
     {
       title: t('info_share_title'),
