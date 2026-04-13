@@ -385,12 +385,16 @@ function NearbyPlaces() {
 
       {/* Header with Back Button */}
       <View style={styles.header}>
-        <Pressable
+        {/* <Pressable
           style={styles.backButton}
           onPress={() => navigation.goBack()}
         >
           <Icon name="arrow-back" size={24} color={colors.text} />
+        </Pressable> */}
+        <Pressable style={styles.backButton} onPress={() => navigation.goBack()}>
+          <Text style={[styles.backIcon, { color: colors.accent }]}>←</Text>
         </Pressable>
+
         <View style={styles.headerContent}>
           <Text style={styles.title}>Nearby Places</Text>
           <Text style={styles.subtitle}>
@@ -580,21 +584,25 @@ const createStyles = (colors: any) => StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: 20,
+   // paddingHorizontal: 20,
     paddingTop: 20,
     paddingBottom: 10,
   },
   backButton: {
     width: 40,
     height: 40,
-    borderRadius: 20,
-    backgroundColor: colors.surface,
+    //borderRadius: 20,
+   // backgroundColor: colors.surface,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 16,
-    borderWidth: 1,
+   // borderWidth: 1,
     borderColor: colors.border,
   },
+   backIcon: {
+      fontSize: 20,
+      fontWeight: '800',
+    },
   headerContent: {
     flex: 1,
   },
