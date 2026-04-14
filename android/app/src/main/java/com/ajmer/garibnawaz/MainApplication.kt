@@ -1,4 +1,4 @@
-package com.mygni
+package com.ajmer.garibnawaz
 
 import android.app.Application
 import com.facebook.react.PackageList

@@ -1,4 +1,4 @@
-package com.mygni
+package com.ajmer.garibnawaz
 
 import android.app.NotificationManager
 import android.app.PendingIntent

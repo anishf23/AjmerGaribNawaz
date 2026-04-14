@@ -305,7 +305,7 @@ function Home() {
   };
 
   const onRateApp = async () => {
-    const packageId = 'com.mygni';
+    const packageId = 'com.ajmer.garibnawaz';
     const marketUrl = `market://details?id=${packageId}`;
     const webUrl = `https://play.google.com/store/apps/details?id=${packageId}`;
     const canOpenMarket = await Linking.canOpenURL(marketUrl);
