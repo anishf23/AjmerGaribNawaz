@@ -1,4 +1,4 @@
-package com.ajmer.garibnawaz
+package com.ajmerprayer.garibnawaz
 
 import android.app.Application
 import com.facebook.react.PackageList

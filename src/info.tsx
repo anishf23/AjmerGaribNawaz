@@ -75,7 +75,7 @@ function Info() {
   };
 
   const onRateApp = async () => {
-    const packageId = 'com.ajmer.garibnawaz';
+    const packageId = 'com.ajmerprayer.garibnawaz';
     const marketUrl = `market://details?id=${packageId}`;
     const webUrl = `https://play.google.com/store/apps/details?id=${packageId}`;
     const canOpenMarket = await Linking.canOpenURL(marketUrl);
@@ -97,7 +97,7 @@ function Info() {
       title: t('info_contact_title'),
       subtitle: t('info_contact_subtitle'),
       icon: '✉️',
-      onPress: () => openUrl('mailto:support@mygni.app'),
+      onPress: () => openUrl('mailto:brighttouchapps@gmail.com'),
     },
     {
       title: t('info_privacy_title'),
@@ -122,7 +122,7 @@ function Info() {
       subtitle: t('info_more_apps_subtitle'),
       icon: '📱',
       onPress: () =>
-        openUrl('https://play.google.com/store/apps/developer?id=MyGNI'),
+        openUrl('https://play.google.com/store/apps/dev?id=5296153054024112303'),
     },
     {
       title: t('info_rate_title'),

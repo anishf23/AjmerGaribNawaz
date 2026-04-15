@@ -1,4 +1,4 @@
-package com.ajmer.garibnawaz
+package com.ajmerprayer.garibnawaz
 
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate

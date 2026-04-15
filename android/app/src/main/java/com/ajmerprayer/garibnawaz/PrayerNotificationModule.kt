@@ -1,4 +1,4 @@
-package com.ajmer.garibnawaz
+package com.ajmerprayer.garibnawaz
 
 import android.app.AlarmManager
 import android.app.NotificationChannel
