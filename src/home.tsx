@@ -205,6 +205,40 @@ function getInitialUpcomingHijriYear(today: Date): number {
   return 1447;
 }
 
+function getNextChatti(today: Date): { hijriDate: string; gregorianDate: string } {
+  // Find the next 6th of any Islamic month from today
+  for (let hijriYear = 1440; hijriYear <= 1600; hijriYear += 1) {
+    for (let hijriMonth = 1; hijriMonth <= 12; hijriMonth += 1) {
+      const chattiDate = hijriToGregorianDate(hijriYear, hijriMonth, 6);
+      if (chattiDate >= today) {
+        const monthNames = [
+          'Muharram',
+          'Safar',
+          'Rabi\' al-awwal',
+          'Rabi\' al-thani',
+          'Jumada al-awwal',
+          'Jumada al-thani',
+          'Rajab',
+          'Sha\'ban',
+          'Ramadan',
+          'Shawwal',
+          'Dhu al-Qi\'dah',
+          'Dhu al-Hijjah',
+        ];
+        const monthName = monthNames[hijriMonth - 1];
+        return {
+          hijriDate: `6th ${monthName} ${hijriYear} AH`,
+          gregorianDate: formatGregorianDate(chattiDate),
+        };
+      }
+    }
+  }
+  return {
+    hijriDate: '6th Muharram 1450 AH',
+    gregorianDate: formatGregorianDate(new Date()),
+  };
+}
+
 function Home() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
   const { width } = useWindowDimensions();
@@ -411,32 +445,47 @@ function Home() {
     const currentDate = new Date();
     const hijriYear = getInitialUpcomingHijriYear(currentDate);
 
-    const events = ursEventDefinitions.map(event => {
-      const startDate = hijriToGregorianDate(
-        hijriYear,
-        URS_HIJRI_MONTH,
-        event.startDay,
-      );
-      const endDay = event.endDay ?? event.startDay;
-      const endDate = hijriToGregorianDate(hijriYear, URS_HIJRI_MONTH, endDay);
+    // Get Chatti Sharif Date separately (6th of upcoming Islamic month)
+    const chattiInfo = getNextChatti(currentDate);
+    const chattiEvent: UrsEvent = {
+      name: 'Chatti Sharif Date',
+      islamicDate: chattiInfo.hijriDate,
+      englishDate: chattiInfo.gregorianDate + ' (Approx.)',
+      note: 'Observed on the 6th of every Islamic month',
+    };
 
-      const islamicDate =
-        event.endDay && event.endDay !== event.startDay
-          ? `${getOrdinal(event.startDay)}-${getOrdinal(event.endDay)} ${HIJRI_MONTH_NAME} ${hijriYear} AH`
-          : `${getOrdinal(event.startDay)} ${HIJRI_MONTH_NAME} ${hijriYear} AH`;
+    // Get other Urs events for Rajab
+    const ursEvents = ursEventDefinitions
+      .filter(event => event.name !== 'Chatti Sharif Date')
+      .map(event => {
+        const startDate = hijriToGregorianDate(
+          hijriYear,
+          URS_HIJRI_MONTH,
+          event.startDay,
+        );
+        const endDay = event.endDay ?? event.startDay;
+        const endDate = hijriToGregorianDate(hijriYear, URS_HIJRI_MONTH, endDay);
 
-      const englishDate =
-        event.endDay && event.endDay !== event.startDay
-          ? `${formatGregorianDate(startDate)} - ${formatGregorianDate(endDate)} (Approx.)`
-          : `${formatGregorianDate(startDate)} (Approx.)`;
+        const islamicDate =
+          event.endDay && event.endDay !== event.startDay
+            ? `${getOrdinal(event.startDay)}-${getOrdinal(event.endDay)} ${HIJRI_MONTH_NAME} ${hijriYear} AH`
+            : `${getOrdinal(event.startDay)} ${HIJRI_MONTH_NAME} ${hijriYear} AH`;
 
-      return {
-        name: event.name,
-        islamicDate,
-        englishDate,
-        note: event.note,
-      };
-    });
+        const englishDate =
+          event.endDay && event.endDay !== event.startDay
+            ? `${formatGregorianDate(startDate)} - ${formatGregorianDate(endDate)} (Approx.)`
+            : `${formatGregorianDate(startDate)} (Approx.)`;
+
+        return {
+          name: event.name,
+          islamicDate,
+          englishDate,
+          note: event.note,
+        };
+      });
+
+    // Combine: Chatti Sharif first, then other Urs events
+    const events = [chattiEvent, ...ursEvents];
 
     const mainDayDate = hijriToGregorianDate(hijriYear, URS_HIJRI_MONTH, URS_MAIN_DAY);
     const gregorianYear = new Intl.DateTimeFormat('en-GB', {
