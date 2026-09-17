@@ -1,5 +1,6 @@
-import React, { createContext, useContext, useMemo, useState } from 'react';
+import React, { createContext, useCallback, useContext, useEffect, useMemo, useState } from 'react';
 import { ColorSchemeName, useColorScheme } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export type ThemeMode = 'light' | 'dark' | 'system';
 export type ResolvedThemeMode = 'light' | 'dark';
@@ -81,7 +82,7 @@ const darkColors: AppThemeColors = {
   successSurface: '#121212',
 };
 
-// Color themes for light mode
+// Color themes share their accent values across light and dark modes.
 const blueTheme: AppThemeColors = {
   ...lightColors,
   accent: '#2563eb',
@@ -141,7 +142,31 @@ const colorThemes: Record<ColorTheme, AppThemeColors> = {
   red: redTheme,
 };
 
+const darkAccentSoft: Record<ColorTheme, string> = {
+  default: '#332712',
+  blue: '#152642',
+  green: '#153624',
+  purple: '#2D1D42',
+  orange: '#402514',
+  red: '#401B20',
+};
+
+function getDarkTheme(colorTheme: ColorTheme): AppThemeColors {
+  const selected = colorThemes[colorTheme];
+
+  return {
+    ...darkColors,
+    accent: selected.accent,
+    accentStrong: selected.accentStrong,
+    accentSoft: darkAccentSoft[colorTheme],
+    accentContrast: selected.accentContrast,
+    orbPrimary: darkAccentSoft[colorTheme],
+  };
+}
+
 const ThemeContext = createContext<AppTheme | null>(null);
+const THEME_MODE_STORAGE_KEY = 'APP_THEME_MODE';
+const COLOR_THEME_STORAGE_KEY = 'APP_COLOR_THEME';
 
 function getResolvedMode(mode: ThemeMode, deviceScheme: ColorSchemeName): ResolvedThemeMode {
   if (mode === 'system') {
@@ -156,15 +181,55 @@ type AppThemeProviderProps = {
 
 export function AppThemeProvider({ children }: AppThemeProviderProps) {
   const deviceScheme = useColorScheme();
-  const [mode, setMode] = useState<ThemeMode>('system');
-  const [colorTheme, setColorTheme] = useState<ColorTheme>('default');
+  const [mode, setModeState] = useState<ThemeMode>('system');
+  const [colorTheme, setColorThemeState] = useState<ColorTheme>('default');
+
+  useEffect(() => {
+    const restoreThemePreferences = async () => {
+      try {
+        const [savedMode, savedColorTheme] = await Promise.all([
+          AsyncStorage.getItem(THEME_MODE_STORAGE_KEY),
+          AsyncStorage.getItem(COLOR_THEME_STORAGE_KEY),
+        ]);
+
+        if (savedMode === 'light' || savedMode === 'dark' || savedMode === 'system') {
+          setModeState(savedMode);
+        }
+        if (
+          savedColorTheme === 'default' ||
+          savedColorTheme === 'blue' ||
+          savedColorTheme === 'green' ||
+          savedColorTheme === 'purple' ||
+          savedColorTheme === 'orange' ||
+          savedColorTheme === 'red'
+        ) {
+          setColorThemeState(savedColorTheme);
+        }
+      } catch (error) {
+        console.warn('Unable to restore theme preferences', error);
+      }
+    };
+
+    restoreThemePreferences();
+  }, []);
+
+  const setMode = useCallback((nextMode: ThemeMode) => {
+    setModeState(nextMode);
+    AsyncStorage.setItem(THEME_MODE_STORAGE_KEY, nextMode).catch(error => {
+      console.warn('Unable to save theme mode', error);
+    });
+  }, []);
+
+  const setColorTheme = useCallback((nextColorTheme: ColorTheme) => {
+    setColorThemeState(nextColorTheme);
+    AsyncStorage.setItem(COLOR_THEME_STORAGE_KEY, nextColorTheme).catch(error => {
+      console.warn('Unable to save color theme', error);
+    });
+  }, []);
   const resolvedMode = getResolvedMode(mode, deviceScheme);
 
   const colors = useMemo(() => {
-    if (resolvedMode === 'dark') {
-      return darkColors;
-    }
-    return colorThemes[colorTheme];
+    return resolvedMode === 'dark' ? getDarkTheme(colorTheme) : colorThemes[colorTheme];
   }, [resolvedMode, colorTheme]);
 
   const value = useMemo<AppTheme>(
@@ -176,7 +241,7 @@ export function AppThemeProvider({ children }: AppThemeProviderProps) {
       setMode,
       setColorTheme,
     }),
-    [mode, resolvedMode, colorTheme, colors],
+    [mode, resolvedMode, colorTheme, colors, setMode, setColorTheme],
   );
 
   return <ThemeContext.Provider value={value}>{children}</ThemeContext.Provider>;

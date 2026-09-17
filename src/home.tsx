@@ -2,15 +2,11 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
-  Alert,
-  Image,
-  Linking,
   Pressable,
   ScrollView,
   StyleSheet,
   Text,
   View,
-  useWindowDimensions,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -241,11 +237,9 @@ function getNextChatti(today: Date): { hijriDate: string; gregorianDate: string 
 
 function Home() {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>();
-  const { width } = useWindowDimensions();
   const { colors } = useAppTheme();
   const { t } = useLocalization();
   const styles = createStyles(colors);
-  const cardWidth = width - 56;
   const [todayPrayerStatus, setTodayPrayerStatus] = useState<Record<string, boolean>>(
     () => PRAYER_NAMES.reduce((acc, name) => ({ ...acc, [name]: false }), {} as Record<string, boolean>),
   );
@@ -324,31 +318,6 @@ function Home() {
       refreshDailyPicks();
     }, [refreshDailyPicks]),
   );
-
-  const openUrl = async (url: string) => {
-    try {
-      const supported = await Linking.canOpenURL(url);
-      if (!supported) {
-        Alert.alert(t('common_unable_open'), t('common_link_unsupported'));
-        return;
-      }
-      await Linking.openURL(url);
-    } catch {
-      Alert.alert(t('common_something_wrong'), t('common_try_again'));
-    }
-  };
-
-  const onRateApp = async () => {
-    const packageId = 'com.ajmerprayer.garibnawaz';
-    const marketUrl = `market://details?id=${packageId}`;
-    const webUrl = `https://play.google.com/store/apps/details?id=${packageId}`;
-    const canOpenMarket = await Linking.canOpenURL(marketUrl);
-    if (canOpenMarket) {
-      await openUrl(marketUrl);
-      return;
-    }
-    await openUrl(webUrl);
-  };
 
   const homeMenusWithActions = useMemo<HomeMenu[]>(
     () =>
@@ -502,152 +471,72 @@ function Home() {
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
-      <ScrollView
-        contentContainerStyle={styles.pageContent}
-        showsVerticalScrollIndicator={false}
-      >
-        <View style={styles.bgOrbTop} />
-        <View style={styles.bgOrbRight} />
+      <ScrollView contentContainerStyle={styles.pageContent} showsVerticalScrollIndicator={false}>
         <View style={styles.headerWrap}>
           <View style={styles.headerTopRow}>
-            <View style={styles.headerTextWrap}>
-              <Text style={styles.kicker}>{t('home_kicker')}</Text>
-              <Text style={styles.title}>{t('home_title')}</Text>
-            </View>
+            <Text style={styles.title}>Assalamu Alaikum</Text>
+            <View style={styles.headerActions}>
+              <Pressable style={styles.headerIconButton} onPress={() => navigation.navigate('PrayerSettings')}><Text style={styles.headerIcon}>⚙</Text></Pressable>
             <Pressable
-              style={styles.aiButton}
+              style={styles.profileButton}
               onPress={() => navigation.navigate('DeenAI')}
               accessibilityRole="button"
               accessibilityLabel="Open Deen AI"
             >
-              <View style={styles.aiButtonGlow} />
-              <View style={styles.aiButtonInnerRing}>
-                <Image
-                  source={require('../assets/images/ai.png')}
-                  style={styles.aiButtonIcon}
-                  resizeMode="contain"
-                />
-              </View>
+              <Text style={styles.profileIcon}>♙</Text>
             </Pressable>
-          </View>
-          <Text style={styles.subtitle}>{t('home_subtitle')}</Text>
-        </View>
-
-        <View key={nextUrsBlock.key} style={styles.nextUrsSection}>
-          <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>{t('home_upcoming_urs')}</Text>
-            <Text style={styles.sectionBadge}>{t('home_ajmer_shareef')}</Text>
-          </View>
-          <Text style={styles.sectionSubTitle}>{nextUrsBlock.heading}</Text>
-          <ScrollView
-            horizontal
-            pagingEnabled
-            snapToInterval={cardWidth + 12}
-            decelerationRate="fast"
-            contentContainerStyle={styles.horizontalContent}
-            showsHorizontalScrollIndicator={false}
-          >
-            {nextUrsBlock.events.map(event => (
-              <View
-                key={`${nextUrsBlock.key}-${event.name}`}
-                style={[styles.card, { width: cardWidth }]}
-              >
-                <Text style={styles.eventName}>{event.name}</Text>
-                <View style={styles.metaBox}>
-                  <Text style={styles.rowLabel}>Islamic Date</Text>
-                  <Text style={styles.rowValue}>{event.islamicDate}</Text>
-                </View>
-                <View style={styles.metaBox}>
-                  <Text style={styles.rowLabel}>English Date</Text>
-                  <Text style={styles.rowValue}>{event.englishDate}</Text>
-                </View>
-                {event.note ? <Text style={styles.note}>{event.note}</Text> : null}
-              </View>
-            ))}
-          </ScrollView>
-        </View>
-
-        <View style={styles.menuSection}>
-          <Text style={styles.menuSectionTitle}>{t('home_explore_menu')}</Text>
-          <View style={styles.menuGrid}>
-            {homeMenusWithActions.map(menu => (
-              <Pressable
-                key={menu.id}
-                style={styles.menuCard}
-                onPress={menu.onPress}
-                disabled={!menu.onPress}
-              >
-                <View style={styles.menuIconCircle}>
-                  <Text style={styles.menuIcon}>{menu.icon}</Text>
-                </View>
-                <Text style={styles.menuText}>{t(menu.titleKey)}</Text>
-              </Pressable>
-            ))}
+            </View>
           </View>
         </View>
 
         <View style={styles.prayerTrackerCard}>
-          <Text style={styles.prayerTrackerTitle}>Prayer Tracker</Text>
-          <Text style={styles.prayerTrackerSubtitle}>
-            Next prayer: {nextPrayerName} at {nextPrayerTime.toLocaleTimeString([], {hour: '2-digit', minute: '2-digit'})}
-          </Text>
+          <Text style={styles.dailyKicker}>NEXT PRAYER</Text>
+          <Text style={styles.nextPrayerTitle}>{nextPrayerName} at {nextPrayerTime.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</Text>
           <ScrollView
             horizontal
             showsHorizontalScrollIndicator={false}
-            contentContainerStyle={styles.prayerButtonsRow}
           >
-            {todayPrayers.map(prayer => {
+            <View style={styles.prayerButtonsRow}>{todayPrayers.map(prayer => {
               const prayerName = prayer.name;
-              const error = new Date(prayer.time).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
               const isAvailable = now.getTime() >= prayer.time.getTime();
               const done = !!todayPrayerStatus[prayerName];
-              return (
-                <Pressable
-                  key={prayerName}
-                  style={[
-                    styles.prayerChip,
-                    {
-                      backgroundColor: done
-                        ? colors.accent
-                        : isAvailable
-                        ? colors.surface
-                        : colors.surfaceMuted,
-                      borderColor: isAvailable ? colors.accent : colors.border,
-                    },
-                  ]}
-                  onPress={() => {
-                    if (!isAvailable) {
-                      return;
-                    }
-                    togglePrayer(prayerName);
-                  }}
-                >
-                  <Text
-                      style={[
-                        styles.prayerChipTitle,
-                        { color: done ? colors.accentContrast : isAvailable ? colors.text : colors.textMuted },
-                      ]}
-                  >
-                    {prayerName} {error}
-                  </Text>
-                    <Text
-                      style={[
-                        styles.prayerChipSubtext,
-                        { color: done ? colors.accentContrast : colors.textMuted },
-                      ]}
-                    >
-                    {done ? 'Done' : isAvailable ? 'Mark' : 'Future'}
-                  </Text>
-                </Pressable>
-              );
-            })}
+              return <Pressable key={prayerName} style={styles.prayerChip} onPress={() => togglePrayer(prayerName)} disabled={!isAvailable}>
+                <Text style={[styles.prayerChipTitle, done && styles.prayerChipTitleActive]}>{prayerName.toUpperCase()}</Text>
+                <View style={[styles.prayerCircle, done && styles.prayerCircleDone]}><Text style={[styles.prayerSymbol, done && styles.prayerSymbolDone]}>{done ? '✓' : '☼'}</Text></View>
+                <Text style={styles.prayerChipSubtext}>{prayer.time.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' })}</Text>
+              </Pressable>;
+            })}</View>
           </ScrollView>
-          <Pressable
-            style={[styles.prayerTrackerButton, { marginTop: 10 }]}
-            onPress={() => navigation.navigate('PrayerTracker')}
+          <Pressable style={styles.prayerTrackerButton} onPress={() => navigation.navigate('PrayerTracker')}><Text style={styles.prayerTrackerButtonText}>View all tracker records  →</Text></Pressable>
+        </View>
+
+        <View key={nextUrsBlock.key} style={styles.ursSection}>
+          <View style={styles.ursSectionHeader}>
+            <Text style={styles.ursSectionTitle}>Ajmer Garib Nawaz Urs</Text>
+            <Pressable onPress={() => navigation.navigate('IslamicCalendar')}>
+              <Text style={styles.ursSeeAll}>View calendar</Text>
+            </Pressable>
+          </View>
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            contentContainerStyle={styles.ursScrollContent}
           >
-            <Text style={styles.prayerTrackerButtonText}>View all tracker records</Text>
-          </Pressable>
+            {nextUrsBlock.events.map((event, index) => (
+              <Pressable
+                key={`${nextUrsBlock.key}-${event.name}`}
+                style={[styles.ursCard, index === 0 && styles.ursCardFirst]}
+                onPress={() => navigation.navigate('IslamicCalendar')}
+              >
+                <View style={styles.ursBadge}>
+                  <Text style={styles.ursBadgeText}>{index === 0 ? '▣  UPCOMING EVENT' : 'AJMER URS EVENT'}</Text>
+                </View>
+                <Text style={styles.ursTitle}>{event.name}</Text>
+                <Text style={styles.ursDate}>{event.islamicDate}{'\n'}{event.englishDate}</Text>
+                {event.note ? <Text style={styles.ursNote}>{event.note}</Text> : null}
+              </Pressable>
+            ))}
+          </ScrollView>
         </View>
 
         <View style={styles.dailySection}>
@@ -656,8 +545,8 @@ function Home() {
           <View style={styles.dailyCard}>
             <Text style={styles.dailyKicker}>{t('home_name_of_day')}</Text>
             <Text style={styles.dailyTitle}>{dailyAllahName.english}</Text>
-            <Text style={styles.dailyArabic}>{dailyAllahName.arabic}</Text>
             <Text style={styles.dailyBody}>{dailyAllahName.meaning}</Text>
+            <Text style={styles.dailyArabic}>{dailyAllahName.arabic}</Text>
           </View>
 
           <View style={styles.dailyCard}>
@@ -673,13 +562,11 @@ function Home() {
             <Text style={styles.dailyQuoteSource}>{dailyQuote.source}</Text>
           </View>
 
-          <Pressable style={styles.rateCard} onPress={onRateApp}>
-            <View style={styles.rateTopRow}>
-              <Text style={styles.rateIcon}>⭐</Text>
-              <Text style={styles.rateTitle}>{t('home_rate_title')}</Text>
-            </View>
-            <Text style={styles.rateText}>{t('home_rate_text')}</Text>
-          </Pressable>
+        </View>
+
+        <View style={styles.menuSection}>
+          <Text style={styles.menuSectionTitle}>{t('home_explore_menu')}</Text>
+          <View style={styles.menuGrid}>{homeMenusWithActions.map(menu => <Pressable key={menu.id} style={styles.menuCard} onPress={menu.onPress}><View style={styles.menuIconCircle}><Text style={styles.menuIcon}>{menu.icon}</Text></View><Text style={styles.menuText}>{t(menu.titleKey)}</Text></Pressable>)}</View>
         </View>
       </ScrollView>
     </SafeAreaView>
@@ -692,100 +579,42 @@ const createStyles = (colors: AppThemeColors) =>
       flex: 1,
       backgroundColor: colors.background,
     },
-    bgOrbTop: {
-      position: 'absolute',
-      top: -120,
-      left: -60,
-      width: 240,
-      height: 240,
-      borderRadius: 120,
-      backgroundColor: colors.orbPrimary,
-    },
-    bgOrbRight: {
-      position: 'absolute',
-      top: 20,
-      right: -50,
-      width: 160,
-      height: 160,
-      borderRadius: 80,
-      backgroundColor: colors.orbSecondary,
-    },
     pageContent: {
-      paddingBottom: 108,
+      paddingBottom: 116,
     },
     headerWrap: {
-      paddingTop: 16,
-      paddingHorizontal: 18,
-      paddingBottom: 8,
+      paddingTop: 10,
+      paddingHorizontal: 16,
+      paddingBottom: 22,
     },
     headerTopRow: {
       flexDirection: 'row',
-      alignItems: 'flex-start',
+      alignItems: 'center',
       justifyContent: 'space-between',
       gap: 12,
     },
-    headerTextWrap: {
-      flex: 1,
-    },
-    kicker: {
-      fontSize: 11,
-      fontWeight: '700',
-      letterSpacing: 1.1,
-      color: colors.accent,
-      marginBottom: 6,
-    },
     title: {
-      fontSize: 30,
-      fontWeight: '800',
+      fontSize: 20,
+      fontWeight: '700',
       color: colors.text,
     },
-    subtitle: {
-      marginTop: 4,
-      fontSize: 13,
-      color: colors.textMuted,
-      lineHeight: 19,
+    headerActions: {
+      flexDirection: 'row',
+      alignItems: 'center',
+      gap: 14,
     },
-    aiButton: {
-      width: 52,
-      height: 52,
-      borderRadius: 26,
-      backgroundColor: colors.surface,
+    headerIconButton: { padding: 2 },
+    headerIcon: { color: colors.text, fontSize: 24 },
+    profileButton: {
+      width: 34,
+      height: 34,
+      borderRadius: 17,
       borderWidth: 1,
       borderColor: colors.border,
       alignItems: 'center',
       justifyContent: 'center',
-      overflow: 'hidden',
-      shadowColor: colors.shadow,
-      shadowOffset: { width: 0, height: 6 },
-      shadowOpacity: 0.14,
-      shadowRadius: 16,
-      elevation: 4,
     },
-    aiButtonGlow: {
-      position: 'absolute',
-      top: -10,
-      left: 8,
-      width: 40,
-      height: 24,
-      borderRadius: 999,
-      backgroundColor: colors.accent,
-      opacity: 0.24,
-    },
-    aiButtonInnerRing: {
-      width: 38,
-      height: 38,
-      borderRadius: 19,
-      borderWidth: 1,
-      borderColor: colors.borderSoft,
-      backgroundColor: colors.surfaceStrong,
-      alignItems: 'center',
-      justifyContent: 'center',
-    },
-    aiButtonIcon: {
-      width: 20,
-      height: 20,
-      tintColor: colors.accent,
-    },
+    profileIcon: { color: colors.textMuted, fontSize: 19 },
     section: {
       marginBottom: 14,
     },
@@ -825,11 +654,11 @@ const createStyles = (colors: AppThemeColors) =>
       gap: 12,
     },
     menuSection: {
-      paddingHorizontal: 18,
+      paddingHorizontal: 16,
       paddingBottom: 16,
     },
     menuSectionTitle: {
-      fontSize: 19,
+      fontSize: 20,
       fontWeight: '800',
       color: colors.text,
       marginBottom: 10,
@@ -840,16 +669,17 @@ const createStyles = (colors: AppThemeColors) =>
       justifyContent: 'space-between',
     },
     menuCard: {
-      width: '48%',
+      width: '48.3%',
       backgroundColor: colors.surface,
       borderWidth: 1,
       borderColor: colors.border,
-      borderRadius: 16,
+      borderRadius: 15,
       paddingHorizontal: 12,
       paddingVertical: 14,
       marginBottom: 10,
-      minHeight: 86,
+      minHeight: 172,
       justifyContent: 'center',
+      alignItems: 'center',
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 4 },
       shadowOpacity: 0.07,
@@ -866,13 +696,14 @@ const createStyles = (colors: AppThemeColors) =>
       marginBottom: 8,
     },
     menuIcon: {
-      fontSize: 16,
+      fontSize: 18,
     },
     menuText: {
       fontSize: 14,
       fontWeight: '700',
       color: colors.text,
       lineHeight: 20,
+      textAlign: 'center',
     },
     card: {
       backgroundColor: colors.surface,
@@ -920,9 +751,9 @@ const createStyles = (colors: AppThemeColors) =>
       fontWeight: '700',
     },
     dailySection: {
-      paddingHorizontal: 18,
+      paddingHorizontal: 16,
       paddingBottom: 22,
-      gap: 10,
+      gap: 16,
     },
     dailySectionTitle: {
       fontSize: 19,
@@ -932,10 +763,11 @@ const createStyles = (colors: AppThemeColors) =>
     },
     dailyCard: {
       backgroundColor: colors.surface,
-      borderRadius: 18,
+      borderRadius: 16,
       borderWidth: 1,
       borderColor: colors.border,
-      padding: 14,
+      padding: 20,
+      minHeight: 183,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 5 },
       shadowOpacity: 0.07,
@@ -950,13 +782,13 @@ const createStyles = (colors: AppThemeColors) =>
       marginBottom: 6,
     },
     dailyTitle: {
-      fontSize: 18,
+      fontSize: 20,
       fontWeight: '800',
       color: colors.text,
     },
     dailyArabic: {
-      marginTop: 8,
-      fontSize: 24,
+      marginTop: 'auto',
+      fontSize: 34,
       fontWeight: '700',
       color: colors.text,
       textAlign: 'right',
@@ -968,9 +800,9 @@ const createStyles = (colors: AppThemeColors) =>
       color: colors.textMuted,
     },
     dailyQuoteText: {
-      fontSize: 18,
-      lineHeight: 28,
-      fontWeight: '700',
+      fontSize: 17,
+      lineHeight: 24,
+      fontWeight: '500',
       color: colors.text,
     },
     dailyQuoteSource: {
@@ -985,70 +817,94 @@ const createStyles = (colors: AppThemeColors) =>
       borderWidth: 1,
       borderColor: colors.border,
       backgroundColor: colors.surface,
-      padding: 16,
-      marginHorizontal: 15,
-      marginBottom: 12,
+      padding: 20,
+      marginHorizontal: 16,
+      marginBottom: 16,
       shadowColor: colors.shadow,
       shadowOffset: { width: 0, height: 6 },
       shadowOpacity: 0.07,
       shadowRadius: 14,
       elevation: 3,
     },
-    prayerTrackerTitle: {
-      fontSize: 18,
-      fontWeight: '800',
+    nextPrayerTitle: {
+      fontSize: 21,
+      fontWeight: '700',
       color: colors.text,
-      marginBottom: 4,
-    },
-    prayerTrackerSubtitle: {
-      color: colors.textMuted,
-      marginBottom: 10,
-      fontSize: 13,
+      marginBottom: 18,
     },
     prayerButtonsRow: {
       flexDirection: 'row',
       alignItems: 'center',
-      paddingHorizontal: 8,
-      marginBottom: 12,
+      marginBottom: 18,
     },
     prayerChip: {
-      minWidth: 70,
-      maxWidth: 90,
-      width: 86,
-      paddingHorizontal: 6,
-      paddingVertical: 4,
-      height: 38,
-      borderRadius: 12,
+      width: 88,
+      paddingHorizontal: 4,
+      alignItems: 'center',
+      justifyContent: 'flex-start',
+    },
+    prayerCircle: {
+      width: 40,
+      height: 40,
+      borderRadius: 20,
+      marginVertical: 7,
       borderWidth: 1,
       borderColor: colors.border,
       alignItems: 'center',
       justifyContent: 'center',
-      margin: 4,
     },
+    prayerCircleActive: { borderColor: colors.accent, borderWidth: 2 },
+    prayerCircleDone: { backgroundColor: colors.accent, borderColor: colors.accent },
+    prayerSymbol: { fontSize: 15, color: colors.textSoft },
+    prayerSymbolDone: { color: '#FFFFFF' },
     prayerChipTitle: {
       fontSize: 10,
       fontWeight: '700',
       lineHeight: 12,
       textAlign: 'center',
+      color: colors.textSoft,
     },
+    prayerChipTitleActive: { color: colors.accent },
     prayerChipSubtext: {
-      fontSize: 8,
-      fontWeight: '700',
+      fontSize: 11,
+      fontWeight: '400',
       lineHeight: 10,
-      marginTop: 2,
+      color: colors.textSoft,
       textAlign: 'center',
     },
     prayerTrackerButton: {
-      backgroundColor: colors.accent,
+      borderWidth: 1,
+      borderColor: colors.border,
       borderRadius: 12,
-      paddingVertical: 10,
+      paddingVertical: 14,
       paddingHorizontal: 12,
       alignItems: 'center',
     },
     prayerTrackerButtonText: {
-      color: colors.accentContrast,
+      color: colors.text,
       fontWeight: '700',
     },
+    ursSection: { marginBottom: 18 },
+    ursSectionHeader: { paddingHorizontal: 16, flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', marginBottom: 10 },
+    ursSectionTitle: { fontSize: 20, fontWeight: '700', color: colors.text },
+    ursSeeAll: { color: colors.accent, fontSize: 13, fontWeight: '700' },
+    ursScrollContent: { paddingLeft: 16, paddingRight: 4, gap: 12 },
+    ursCard: {
+      width: 304,
+      minHeight: 160,
+      borderRadius: 16,
+      borderWidth: 1,
+      borderColor: colors.border,
+      backgroundColor: colors.surface,
+      padding: 20,
+      justifyContent: 'center',
+    },
+    ursCardFirst: { backgroundColor: colors.surfaceStrong },
+    ursBadge: { alignSelf: 'flex-start', backgroundColor: colors.accentSoft, borderRadius: 5, paddingHorizontal: 9, paddingVertical: 5, marginBottom: 15 },
+    ursBadgeText: { fontSize: 10, fontWeight: '700', color: colors.accent },
+    ursTitle: { fontSize: 20, fontWeight: '700', color: colors.text, marginBottom: 5 },
+    ursDate: { fontSize: 14, color: colors.textMuted, lineHeight: 20 },
+    ursNote: { marginTop: 8, fontSize: 12, color: colors.accent },
     rateCard: {
       backgroundColor: colors.accentSoft,
       borderRadius: 18,

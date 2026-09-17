@@ -6,6 +6,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import type { RootStackParamList } from '../App';
 import { useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
+import { AdMobBanner } from './admob-banner';
 
 type Dua = {
   id: number;
@@ -184,6 +185,7 @@ function IslamicDua() {
           </View>
         )}
       />
+      <AdMobBanner />
     </SafeAreaView>
   );
 }

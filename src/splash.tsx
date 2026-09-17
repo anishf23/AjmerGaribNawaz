@@ -21,9 +21,9 @@ function Splash({ label = 'MyGNI' }: SplashProps) {
           resizeMode="contain"
         />
       </View>
-      <Text style={[styles.bottomLabel, { paddingBottom: safeAreaInsets.bottom + 16 }]}>
+      {/* <Text style={[styles.bottomLabel, { paddingBottom: safeAreaInsets.bottom + 16 }]}>
         {label}
-      </Text>
+      </Text> */}
     </View>
   );
 }
