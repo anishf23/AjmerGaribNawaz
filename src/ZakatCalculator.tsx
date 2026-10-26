@@ -12,6 +12,7 @@ import {
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
 import type { RootStackParamList } from '../App';
 import { useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
@@ -218,6 +219,7 @@ function ZakatCalculator() {
           </View>
         </ScrollView>
       </KeyboardAvoidingView>
+      <AdMobBanner />
     </SafeAreaView>
   );
 }

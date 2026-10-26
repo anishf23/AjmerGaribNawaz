@@ -15,6 +15,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
 import Geolocation from '@react-native-community/geolocation';
 import Icon from 'react-native-vector-icons/Ionicons';
 import { useAppTheme } from './theme';
@@ -552,6 +553,7 @@ function NearbyPlaces() {
           </Pressable>
         ))}
       </ScrollView>
+      <AdMobBanner />
     </SafeAreaView>
   );
 }

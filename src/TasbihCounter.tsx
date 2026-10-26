@@ -1,8 +1,10 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
+import { handleCompletedTasbihRound, preloadInterstitialAd } from './interstitial-ad';
 import type { RootStackParamList } from '../App';
 import { useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
@@ -16,6 +18,20 @@ function TasbihCounter() {
   const styles = createStyles(colors);
   const [count, setCount] = useState(0);
   const [target, setTarget] = useState(33);
+
+  useEffect(() => {
+    preloadInterstitialAd();
+  }, []);
+
+  const addOne = () => {
+    if (count >= target) return;
+
+    const nextCount = count + 1;
+    setCount(nextCount);
+    if (nextCount === target) {
+      void handleCompletedTasbihRound();
+    }
+  };
 
   return (
     <SafeAreaView edges={['top', 'bottom']} style={styles.container}>
@@ -54,7 +70,7 @@ function TasbihCounter() {
 
         <Pressable
           style={[styles.counterCircle, count >= target ? styles.counterCircleDone : null]}
-          onPress={() => setCount(value => value + 1)}
+          onPress={addOne}
         >
           <Text style={styles.counterValue}>{count}</Text>
           <Text style={styles.counterLabel}>{t('screen_tasbih_tap')}</Text>
@@ -66,7 +82,7 @@ function TasbihCounter() {
         </Text>
 
         <View style={styles.actionRow}>
-          <Pressable style={styles.primaryButton} onPress={() => setCount(value => value + 1)}>
+          <Pressable style={styles.primaryButton} onPress={addOne}>
             <Text style={styles.primaryButtonText}>{t('screen_tasbih_add_one')}</Text>
           </Pressable>
           <Pressable style={styles.secondaryButton} onPress={() => setCount(0)}>
@@ -74,6 +90,7 @@ function TasbihCounter() {
           </Pressable>
         </View>
       </View>
+      <AdMobBanner />
     </SafeAreaView>
   );
 }
@@ -149,6 +166,7 @@ const createStyles = (colors: AppThemeColors) =>
       color: colors.textMuted,
     },
     content: {
+      flex: 1,
       paddingHorizontal: 16,
       alignItems: 'center',
     },

@@ -3,6 +3,7 @@ import { FlatList, Pressable, StyleSheet, Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
 import type { RootStackParamList } from '../App';
 import { useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
@@ -105,6 +106,7 @@ function MustVisitPlace() {
           </View>
         )}
       />
+      <AdMobBanner />
     </SafeAreaView>
   );
 }

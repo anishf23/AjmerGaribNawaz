@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
 import Icon from 'react-native-vector-icons/Ionicons';
 import type { RootStackParamList } from '../App';
 import { useLocalization } from './localization';
@@ -396,6 +397,7 @@ function DeenAI() {
           </View>
         )}
       />
+      <AdMobBanner />
     </SafeAreaView>
   );
 }

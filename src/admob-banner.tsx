@@ -1,23 +1,43 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 import { BannerAd, BannerAdSize, TestIds } from 'react-native-google-mobile-ads';
+import { getBannerFreeUntil } from './ad-rewards';
 
 type AdMobBannerProps = {
-  /**
-   * Supply a production banner unit ID when releasing the app.
-   * When omitted, development builds safely use Google's test banner.
-   */
   adUnitId?: string;
 };
 
-const DEFAULT_UNIT_ID = __DEV__ ? TestIds.BANNER : undefined;
+const PRODUCTION_UNIT_ID = 'ca-app-pub-7672039594265570/9744167573';
+const DEFAULT_UNIT_ID = __DEV__ ? TestIds.BANNER : PRODUCTION_UNIT_ID;
 
 export function AdMobBanner({ adUnitId = DEFAULT_UNIT_ID }: AdMobBannerProps) {
-  // Never ship Google's test ad unit ID in a release build. Pass your own
-  // production unit ID, for example: ca-app-pub-xxxxxxxxxxxxxxxx/xxxxxxxxxx.
-  if (!adUnitId) {
-    return null;
-  }
+  const [isCheckingReward, setIsCheckingReward] = useState(true);
+  const [bannerFreeUntil, setBannerFreeUntil] = useState(0);
+
+  useEffect(() => {
+    let active = true;
+    let expiryTimer: ReturnType<typeof setTimeout> | undefined;
+
+    getBannerFreeUntil()
+      .then(expiresAt => {
+        if (!active) return;
+        setBannerFreeUntil(expiresAt);
+        setIsCheckingReward(false);
+        if (expiresAt) {
+          expiryTimer = setTimeout(() => setBannerFreeUntil(0), Math.max(expiresAt - Date.now(), 0));
+        }
+      })
+      .catch(() => {
+        if (active) setIsCheckingReward(false);
+      });
+
+    return () => {
+      active = false;
+      if (expiryTimer) clearTimeout(expiryTimer);
+    };
+  }, []);
+
+  if (isCheckingReward || bannerFreeUntil > Date.now() || !adUnitId) return null;
 
   return (
     <View style={styles.container}>

@@ -2,6 +2,7 @@ import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useFocusEffect, useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import {
+  Alert,
   Pressable,
   ScrollView,
   StyleSheet,
@@ -14,6 +15,9 @@ import type { RootStackParamList } from '../App';
 import { TranslationKey, useLocalization } from './localization';
 import { AppThemeColors, useAppTheme } from './theme';
 import { getPrayerList, PRAYER_NAMES } from './prayer-utils';
+import { HomeNativeAd } from './native-ad';
+import { BANNER_FREE_REWARD_MINUTES, grantBannerFreeReward } from './ad-rewards';
+import { preloadRewardedAd, showRewardedAdThen } from './rewarded-navigation';
 
 type UrsEventDefinition = {
   name: string;
@@ -293,6 +297,7 @@ function Home() {
 
   useEffect(() => {
     loadTodayPrayerStatus();
+    preloadRewardedAd();
   }, [loadTodayPrayerStatus]);
 
   const togglePrayer = async (prayerName: string) => {
@@ -318,6 +323,17 @@ function Home() {
       refreshDailyPicks();
     }, [refreshDailyPicks]),
   );
+
+  const openWithRewardedAd = useCallback((screen: 'QiblaFinder' | 'DeenAI', label: string) => {
+    Alert.alert(
+      'Open ' + label,
+      'Watch one rewarded ad to receive ' + BANNER_FREE_REWARD_MINUTES + ' minutes without banner ads. You can continue without watching.',
+      [
+        { text: 'Continue', onPress: () => navigation.navigate(screen) },
+        { text: 'Watch 1 ad', onPress: () => showRewardedAdThen(() => navigation.navigate(screen), grantBannerFreeReward) },
+      ],
+    );
+  }, [navigation]);
 
   const homeMenusWithActions = useMemo<HomeMenu[]>(
     () =>
@@ -363,7 +379,7 @@ function Home() {
           : menu.id === 'qibla-finder'
             ? {
                 ...menu,
-                onPress: () => navigation.navigate('QiblaFinder'),
+                onPress: () => openWithRewardedAd('QiblaFinder', 'Qibla Finder'),
               }
           : menu.id === 'hadish'
             ? {
@@ -407,7 +423,7 @@ function Home() {
               }
           : menu,
       ),
-    [navigation],
+    [navigation, openWithRewardedAd],
   );
 
   const nextUrsBlock = useMemo<UrsYearBlock>(() => {
@@ -479,7 +495,7 @@ function Home() {
               <Pressable style={styles.headerIconButton} onPress={() => navigation.navigate('PrayerSettings')}><Text style={styles.headerIcon}>⚙</Text></Pressable>
             <Pressable
               style={styles.profileButton}
-              onPress={() => navigation.navigate('DeenAI')}
+              onPress={() => openWithRewardedAd('DeenAI', 'Deen AI')}
               accessibilityRole="button"
               accessibilityLabel="Open Deen AI"
             >
@@ -539,6 +555,8 @@ function Home() {
           </ScrollView>
         </View>
 
+        <HomeNativeAd />
+
         <View style={styles.dailySection}>
           <Text style={styles.dailySectionTitle}>{t('home_daily_picks')}</Text>
 
@@ -568,6 +586,7 @@ function Home() {
           <Text style={styles.menuSectionTitle}>{t('home_explore_menu')}</Text>
           <View style={styles.menuGrid}>{homeMenusWithActions.map(menu => <Pressable key={menu.id} style={styles.menuCard} onPress={menu.onPress}><View style={styles.menuIconCircle}><Text style={styles.menuIcon}>{menu.icon}</Text></View><Text style={styles.menuText}>{t(menu.titleKey)}</Text></Pressable>)}</View>
         </View>
+        <HomeNativeAd />
       </ScrollView>
     </SafeAreaView>
   );

@@ -21,7 +21,7 @@
     "react": "19.2.3",
     "react-native": "0.84.1",
     "react-native-compass-heading": "^2.0.2",
-    "react-native-gesture-handler": "^2.30.1",
+    "react-native-gesture-handler": "^2.32.0",
     "react-native-google-mobile-ads": "^16.5.0",
     "react-native-safe-area-context": "^5.5.2",
     "react-native-screens": "^4.24.0",

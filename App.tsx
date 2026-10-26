@@ -38,6 +38,7 @@ import TermsAndConditions from './src/TermsAndConditions';
 import ZakatCalculator from './src/ZakatCalculator';
 import { LocalizationProvider } from './src/localization';
 import { AppThemeProvider, useAppTheme } from './src/theme';
+import { AppOpenAdController, showAppOpenAdAfterSplash } from './src/app-open-ad';
 
 export type RootStackParamList = {
   Splash: undefined;
@@ -116,6 +117,7 @@ function AppContent() {
 
   return (
     <SafeAreaProvider>
+      <AppOpenAdController />
       <StatusBar
         barStyle={isDarkMode ? 'light-content' : 'dark-content'}
         backgroundColor={colors.background}
@@ -167,7 +169,7 @@ function SplashRoute({
       try {
         const value = await AsyncStorage.getItem(INTRO_SEEN_KEY);
         if (value === 'true') {
-          navigation.replace('MainTabs');
+          showAppOpenAdAfterSplash(() => navigation.replace('MainTabs'));
         } else {
           navigation.replace('Introduction');
         }

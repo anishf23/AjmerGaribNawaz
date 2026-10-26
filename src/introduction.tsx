@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useLocalization } from './localization';
+import { AdMobBanner } from './admob-banner';
 import { AppThemeColors, useAppTheme } from './theme';
 
 type Slide = {
@@ -91,7 +92,7 @@ function Introduction({ onDone }: IntroductionProps) {
         }}
       />
 
-      <View style={[styles.bottomArea, { paddingBottom: safeAreaInsets.bottom + 20 }]}>
+      <View style={styles.bottomArea}>
         <View style={styles.dotsRow}>
           {slides.map((slide, index) => (
             <View
@@ -108,6 +109,10 @@ function Introduction({ onDone }: IntroductionProps) {
               : t('screen_intro_next')}
           </Text>
         </Pressable>
+      </View>
+
+      <View style={[styles.adArea, { paddingBottom: safeAreaInsets.bottom + 8 }]}>
+        <AdMobBanner />
       </View>
     </View>
   );
@@ -146,6 +151,14 @@ const createStyles = (colors: AppThemeColors) =>
     },
     bottomArea: {
       paddingHorizontal: 24,
+      paddingBottom: 18,
+    },
+    adArea: {
+      alignItems: "center",
+      borderTopWidth: 1,
+      borderTopColor: colors.borderSoft,
+      paddingTop: 10,
+      paddingHorizontal: 16,
     },
     dotsRow: {
       flexDirection: 'row',

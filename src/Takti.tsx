@@ -6,6 +6,7 @@ import { useNavigation } from '@react-navigation/native';
 import { NativeStackNavigationProp } from '@react-navigation/native-stack';
 import type { RootStackParamList } from '../App';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { AdMobBanner } from './admob-banner';
 
 const letters = [
   { arabic: 'ا', romaji: 'Alif' },
@@ -65,6 +66,7 @@ function Takti() {
           </View>
         )}
       />
+      <AdMobBanner />
     </SafeAreaView>
   );
 }
